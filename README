@@ -1,4 +1,13 @@
 
+-----------------------
+Development Environment
+-----------------------
+
+Ubuntu 11.04
+g++ (Ubuntu/Linaro 4.5.2-8ubuntu4) 4.5.2
+ruby 1.9.2p0 (2010-08-18 revision 29036) [x86_64-linux]
+GNU Make 3.81
+
 ---------------------
 levelDB
 ---------------------
