@@ -1,0 +1,81 @@
+#!/usr/bin/ruby
+
+require 'uri'
+require 'json'
+require 'rest_client'
+
+
+class KVS
+
+  def initialize(base_path = "http://localhost:7474/db/data")
+    @neo4j_path = base_path
+  end
+
+  def get_node(id)
+    RestClient.get "#{@neo4j_path}/node/#{id}"
+  end
+
+  def add_node(params)
+    RestClient.post "#{@neo4j_path}/node" ,  params.to_json, :content_type => :json, :accept => :json
+  end
+
+  def rel_node(from, to)
+    RestClient.post "#{@neo4j_path}/node/#{from}/relationships", {:to => "#{@neo4j_path}/node/#{to}", :type => :KNOWS }.to_json, :content_type => :json, :accept => :json
+  end
+
+  def add_index(name)
+    puts RestClient.post "#{@neo4j_path}/index/node" , {:name => name, :config => { :type => "fulltext", :provider => "lucene" } }.to_json, :content_type => :json, :accept => :json
+  end
+
+  def delete_index(name)
+    RestClient.delete "#{@neo4j_path}/index/node/#{name}" , :content_type => :json, :accept => :json
+  end
+
+  def list_indexes
+    puts RestClient.get "#{@neo4j_path}/index/node" , :accept => :json
+  end
+
+  def search_index(name, query)
+    RestClient.get( URI.encode("#{@neo4j_path}/index/node/#{name}?query=#{query}") , :accept => :json)
+  end
+
+end
+
+kvs = KVS.new
+index = 0
+size = ARGV.size
+while index < size
+  if "-node" == ARGV[index] && (index+1) < size then
+    puts kvs.get_node ARGV[index+1]
+    break
+  elsif "-add" == ARGV[index] then
+    param = {}
+    index += 1
+    while index < size
+      if (index+1) < size then
+        param[ARGV[index]] = ARGV[index+1]
+      end
+      index += 2
+    end
+    if param.size > 0 then
+      puts kvs.add_node param
+    end
+    break
+  elsif "-rel" == ARGV[index] && (index+2) < size then
+    puts kvs.rel_node ARGV[index+1] , ARGV[index+2]
+    break
+  elsif "-index" == ARGV[index] && (index+1) < size then
+    puts kvs.add_index ARGV[index+1]
+    break
+  elsif "-delete-index" == ARGV[index] && (index+1) < size then
+    puts kvs.delete_index ARGV[index+1]
+    break
+  elsif "-list-index" == ARGV[index] then
+    puts kvs.list_indexes
+    break
+  elsif "-search" == ARGV[index] && (index+2) < size then
+    puts kvs.search_index ARGV[index+1] , ARGV[index+2]
+    break
+  end
+end
+
