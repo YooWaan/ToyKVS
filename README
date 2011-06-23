@@ -1,0 +1,65 @@
+
+---------------------
+levelDB
+---------------------
+
+
+1.compile levelDB
+-----------------
+
+Step 1 get source
+
+site  : http://code.google.com/p/leveldb/
+source: $ svn checkout http://leveldb.googlecode.com/svn/trunk/ leveldb-read-only
+
+Step 2  update some files
+
+Makefile
+#CFLAGS = -c -I. -I./include $(PLATFORM_CFLAGS) $(OPT) $(SNAPPY_CFLAGS)
+CFLAGS = -c -I. -I./include $(PLATFORM_CFLAGS) $(OPT) $(SNAPPY_CFLAGS) -fPIC
+
+TESTS = \
+        arena_test \
+            :
+        write_batch_test
+#       version_set_test \    <---- not found this file
+
+
+
+port/port_posix.h
+//#include <cstdatomic>
+#include <atomic>
+
+
+Step 3  cp some files
+
+$ sudo cp libleveldb.a /usr/local/lib
+$ sudo cp -r include/leveldb /usr/local/include
+
+
+2.make lkvs
+-----------
+
+$ make all
+
+
+---------------------
+Neo4j
+---------------------
+
+
+1.install Neo4j and setup ruby library.
+---------------------------------------
+
+site   :http://neo4j.org/
+
+Step 1  neo4j setup
+
+see this . http://wiki.neo4j.org/content/Main_Page
+
+
+Step 2  install rest-client
+
+$ gem install rest-client
+
+
